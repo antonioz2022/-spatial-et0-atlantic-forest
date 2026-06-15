@@ -1,0 +1,28 @@
+# Saídas e artefatos gerados em runtime
+outputs/
+mlruns/
+saida/
+
+# Dados do INMET (baixados pelo usuário; não versionar)
+data/*
+!data/.gitkeep
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.pytest_cache/
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+
+# Ambiente local / não versionar
+.claude/
+README-2.md
+RELATORIO.md

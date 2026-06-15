@@ -1,0 +1,16 @@
+# Mantém o contexto de build pequeno (sem dados/saídas/artefatos).
+.git
+.gitignore
+.claude
+**/__pycache__
+**/*.pyc
+.pytest_cache
+.venv
+venv
+data
+outputs
+mlruns
+figuras
+*.zip
+*.CSV
+*.csv

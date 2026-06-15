@@ -1,0 +1,42 @@
+# Dois serviços: `app` roda o pipeline; `mlflow` sobe a UI de experimentos.
+# Ambos compartilham a mesma imagem e o volume ./mlruns (store local por arquivo).
+services:
+  app:
+    build: .
+    image: et0spatial:latest
+    volumes:
+      - ./data:/app/data         # CSVs do INMET (o usuário coloca aqui)
+      - ./outputs:/app/outputs   # tabelas + figuras geradas
+      - ./mlruns:/app/mlruns     # store do MLflow
+    environment:
+      - MLFLOW_TRACKING_URI=file:///app/mlruns
+      - GIT_PYTHON_REFRESH=quiet
+    # Sem `command` -> usa o CMD da imagem (--help). Sobrescreva no run, ex.:
+    #   docker compose run --rm app --demo --fast
+    #   docker compose run --rm app --inmet data/2023 --bbox -41 -34 -11 -4
+
+  mlflow:
+    build: .
+    image: et0spatial:latest
+    entrypoint: ["mlflow"]
+    command: ["ui", "--backend-store-uri", "file:///app/mlruns", "--host", "0.0.0.0", "--port", "5000"]
+    ports:
+      # default 5000 (conforme especificado). No macOS o AirPlay Receiver costuma
+      # ocupar a 5000 — rode `MLFLOW_PORT=5001 docker compose up mlflow` se precisar.
+      - "${MLFLOW_PORT:-5000}:5000"
+    volumes:
+      - ./mlruns:/app/mlruns
+
+  dashboard:
+    build: .
+    image: et0spatial:latest
+    entrypoint: ["streamlit", "run", "src/et0spatial/dashboard.py",
+                 "--server.address=0.0.0.0", "--server.port=8501", "--server.headless=true"]
+    environment:
+      - MLFLOW_TRACKING_URI=file:///app/mlruns
+      - STREAMLIT_BROWSER_GATHER_USAGE_STATS=false
+    ports:
+      - "${DASHBOARD_PORT:-8501}:8501"
+    volumes:
+      - ./mlruns:/app/mlruns
+      - ./outputs:/app/outputs

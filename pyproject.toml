@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "et0spatial"
+version = "0.1.0"
+description = "Reprodução + contribuição do paper Baratto et al. (2022) sobre espacialização de ET0 diária (IDW/ADW/RF + OK/RFRK)."
+requires-python = ">=3.11"
+# Dependências informativas; as versões autoritativas (fixadas) estão em
+# requirements.txt e são instaladas primeiro (o Docker faz `-e . --no-deps`).
+dependencies = [
+    "numpy",
+    "pandas",
+    "scikit-learn",
+    "scipy",
+    "matplotlib",
+    "mlflow",
+    "pyarrow",
+    "tabulate",
+    "streamlit",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[project.scripts]
+et0spatial = "et0spatial.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
