@@ -1,5 +1,13 @@
 # ET0 spatial — reprodução + contribuição (Baratto et al., 2022)
 
+> ⚠️ **Reprodução de _metodologia_, não dos números exatos.** Este projeto
+> reproduz a **metodologia** de Baratto et al. (2022) em **outra região e período**
+> (Espírito Santo, 2023, estações automáticas do INMET) — é uma **adaptação
+> metodológica deliberada**, não uma replicação dos valores do paper. O que se
+> reproduz é o **padrão** (os métodos empatam e o IDW simples compete com o RF),
+> e não os números. A lista completa de desvios, com a justificativa de cada um,
+> está em [Desvios em relação ao paper](#desvios-em-relação-ao-paper).
+
 Reproduz a comparação de interpoladores de **evapotranspiração de referência
 (ET0) diária** do paper de Baratto et al. (2022) — IDW (potências 1–5), ADW e
 Random Forest — por validação cruzada *leave-one-out* (LOO), nas métricas **d de
@@ -191,12 +199,19 @@ Se a porta 8501 estiver ocupada: `DASHBOARD_PORT=8502 docker compose up dashboar
 
 A reprodução é de **metodologia**, em outra região/período — não dos números exatos:
 
-- Estações **automáticas** do INMET (não as 11 convencionais do paper).
+- Estações **automáticas** do INMET (não as 11 convencionais do paper) — são as de
+  download livre e já trazem Tmax/Tmin; o recorte do ES rende 12 estações (≈ as 11
+  do paper), na mesma Mata Atlântica. *Por quê:* viabiliza a reprodução com dados
+  abertos, sem perder a escala/região do estudo original.
 - ET0 por **Hargreaves-Samani** (não Penman-Monteith): é o fallback FAO-56 para
   escassez de dados e o método do banco BRAUM citado no paper. (Para PM, há o
   pacote `refet`.)
 - Covariáveis reduzidas a **lon, lat, altitude** (sem declividade/aspecto/
-  distância ao mar).
-- **ADW**: forma canônica de New et al. (WE = w·(1+a)); o paper escreve (1−a).
+  distância ao mar) — todas saem do **cabeçalho do próprio CSV**. *Por quê:* elimina
+  a dependência de GIS/DEM e mantém a execução 100% reprodutível e offline.
+- **ADW**: forma canônica de New et al. (WE = w·(1+a)); o paper escreve (1−a). *Por
+  quê:* é só o **sinal do termo angular** — a forma canônica é a que de fato
+  penaliza vizinhos agrupados; trocar o sinal é trivial (1 linha) e muda pouco. Não
+  é erro: é a equação original de New et al. (2000).
 - **OK**: variograma exponencial com sill = variância amostral e range = 1/3 da
   distância máxima (estável para poucas estações).
