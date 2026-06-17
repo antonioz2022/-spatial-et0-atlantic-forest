@@ -446,29 +446,41 @@ resíduos.
 \end{figure}
 
 % =====================================================================
-\section{Conclusão e trabalhos futuros}
+\section{Desvios metodológicos assumidos}
 % =====================================================================
 
-A reprodução recupera o padrão de [Baratto et al.\ 2022]: os interpoladores ficam
-muito próximos e o IDW simples compete de igual para igual com o RF, que lidera por
-margem desprezível. A contribuição acrescenta o rigor que faltava para discutir
-isso: o \textbf{Wilcoxon} mostra que as diferenças, quando significativas, são
-minúsculas; o \textbf{OK} dá o \emph{benchmark} geoestatístico; o \textbf{RFRK}
-corrige o artefato ``em blocos'' do RF (com menor viés), ainda que sem ganho de
-métrica; e a \textbf{importância de variáveis} revela que a habilidade do RF é,
-sobretudo, \emph{sazonal}. A lição metodológica é que a escolha do ``melhor''
-interpolador, neste problema, não se decide pelas métricas globais --- elas
-empatam --- e sim por critérios práticos (suavidade do mapa, viés, custo).
+O README do projeto explicita que o trabalho reproduz a metodologia, não os
+números exatos do paper. Os desvios são: uso de estações automáticas do INMET em
+vez das convencionais; ET\textsubscript{0} por Hargreaves--Samani em vez de
+Penman--Monteith; covariáveis restritas a lon, lat e altitude; ADW na forma
+canônica de New et al.; e OK com variograma exponencial fixo. Essas decisões
+reduzem dependências externas e tornam o pipeline executável com dados abertos,
+mas deslocam a comparação para o nível metodológico, e não para a reprodução
+direta dos valores numéricos originais.
 
-\textbf{Limitações e desvios assumidos} (reprodução de \emph{metodologia}, não dos
-números exatos): estações \emph{automáticas} do INMET (não as 11 convencionais),
-outra região e período; ET\textsubscript{0} por Hargreaves--Samani (não
-Penman--Monteith); covariáveis reduzidas a lon/lat/altitude (sem
-declividade/aspecto/distância ao mar); ADW na forma canônica de New et al.\
-($WE = w(1+a)$, enquanto o paper escreve $1-a$); e OK com variograma exponencial
-fixo. \textbf{Trabalhos futuros}: ajuste de variograma por \emph{fold}, inclusão de
-covariáveis topográficas (DEM), ET\textsubscript{0} por Penman--Monteith e a
-inclusão explícita da sazonalidade nos interpoladores espaciais.
+% =====================================================================
+\section{Conclusão}
+% =====================================================================
+
+O projeto confirma, em uma reprodução metodológica aberta, que interpoladores
+simples e modelos de aprendizado de máquina podem ficar numericamente muito
+próximos na espacialização diária da ET\textsubscript{0}. O RF lidera por margem
+pequena; IDW1/IDW2 permanecem competitivos; OK funciona como \emph{benchmark}
+geoestatístico; e RFRK melhora a leitura visual dos mapas sem dominar as métricas
+globais. Esse resultado reforça uma leitura importante do artigo-base: quando as
+diferenças numéricas entre métodos são pequenas, a escolha do interpolador não
+deve depender apenas de uma métrica agregada, mas também da estabilidade espacial
+do mapa, do viés, da interpretabilidade e do custo de execução.
+
+A contribuição mais forte está na integração: ingestão defensiva dos dados,
+cálculo de ET\textsubscript{0}, LOO espacial, comparação de nove interpoladores,
+Wilcoxon, importância de variáveis, MLflow, dashboard e Docker. Assim, a entrega
+não fica restrita à reprodução isolada de uma tabela de resultados: ela organiza
+um fluxo reprodutível, rastreável e executável de ponta a ponta, aproximando a
+análise científica de uma solução de Machine Learning operacional. Trabalhos
+futuros naturais são implementar Penman--Monteith, incluir DEM e variáveis
+topográficas, ajustar variogramas por \emph{fold} e registrar formalmente um
+modelo final versionado no MLflow.
 
 % =====================================================================
 \section*{Referências}
